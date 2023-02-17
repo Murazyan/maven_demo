@@ -1,6 +1,7 @@
 package com.example.maven_demo.manager.impl;
 
 import com.example.maven_demo.manager.UserManager;
+import com.example.maven_demo.mapper.UserMapper;
 import com.example.maven_demo.models.User;
 import com.example.maven_demo.models.enums.Gender;
 import com.example.maven_demo.provider.DBConnectionProvider;
@@ -11,6 +12,7 @@ import java.sql.*;
 public class UserManagerImpl implements UserManager {
 
     private final DBConnectionProvider provider = DBConnectionProvider.getInstance();
+    private final UserMapper usermapper = new UserMapper();
 
     @Override
     @SneakyThrows
@@ -65,15 +67,7 @@ public class UserManagerImpl implements UserManager {
         ResultSet rs = statement.executeQuery();
         boolean firstUserExist = rs.next();
         if (firstUserExist) {
-            return User.builder()
-                    .id(rs.getInt("id"))
-                    .name(rs.getString("name"))
-                    .surname(rs.getString("surname"))
-                    .email(email)
-                    .password(password)
-                    .gender(Gender.valueOf(rs.getString("gender")))
-                    .age(rs.getInt("age"))
-                    .build();
+            return usermapper.apply(rs);
         } else {
             return null;
         }
@@ -88,15 +82,7 @@ public class UserManagerImpl implements UserManager {
         ResultSet rs = statement.executeQuery();
         boolean firstUserExist = rs.next();
         if (firstUserExist) {
-            return User.builder()
-                    .id(rs.getInt("id"))
-                    .name(rs.getString("name"))
-                    .surname(rs.getString("surname"))
-                    .email(rs.getString("email"))
-                    .password(rs.getString("password"))
-                    .gender(Gender.valueOf(rs.getString("gender")))
-                    .age(rs.getInt("age"))
-                    .build();
+            return usermapper.apply(rs);
         } else {
             return null;
         }

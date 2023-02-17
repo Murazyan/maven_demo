@@ -1,10 +1,15 @@
 package com.example.maven_demo;
 
+import com.example.maven_demo.manager.BookManager;
 import com.example.maven_demo.manager.UserManager;
+import com.example.maven_demo.manager.impl.BookManagerImpl;
 import com.example.maven_demo.manager.impl.UserManagerImpl;
+import com.example.maven_demo.models.Book;
 import com.example.maven_demo.models.User;
 import com.example.maven_demo.models.enums.Gender;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 
 public class Application {
@@ -14,6 +19,7 @@ public class Application {
     private final static Scanner scanner = new Scanner(System.in);
 
     private final UserManager userManager = new UserManagerImpl();
+    private final BookManager bookManager = new BookManagerImpl();
 
     public void start() {
         welcomePage();
@@ -94,6 +100,8 @@ public class Application {
     private void userHome() {
         System.out.println("For logout press 1");
         System.out.println("For add new book press 2");
+        System.out.println("For vew my books press 3");
+        System.out.println("For vew all books press 4");
         String command = scanner.nextLine();
         switch (command) {
             case "1": {
@@ -101,8 +109,54 @@ public class Application {
                 start();
             }
             case "2": {
+                addNewBook();
+                break;
+            }
+            case "3": {
+                booksByAuthor(currentUser);
+                break;
+            }
+            case "4" : {
+                allBooks();
+                break;
             }
         }
+    }
+
+    private void allBooks() {
+        List<Book> books = bookManager.allBooks();
+        books.forEach(book -> {
+            System.out.println(String.format("Book {name: %s, created: %s author: %s} ", book.getName(), book.getCreatedAt(), book.getAuthor()));
+        });
+        if(books.isEmpty()){
+            System.out.println("There are no any books in storage");
+        }
+        userHome();
+    }
+
+    private void booksByAuthor(User author) {
+        List<Book> booksByAuthor = bookManager.getBooksByAuthor(author);
+        booksByAuthor.forEach(book -> {
+            System.out.println(String.format("Book {name: %s, created: %s author: %s} ", book.getName(), book.getCreatedAt(), book.getAuthor()));
+        });
+        if(booksByAuthor.isEmpty()){
+            System.out.println("There are no any books");
+        }
+        userHome();
+    }
+
+    private void addNewBook() {
+        System.out.println("Please enter book name");
+        String bookName =  scanner.nextLine();
+        Book savedBook = bookManager.save(Book.builder()
+                .author(currentUser)
+                .authorId(currentUser.getId())
+                .name(bookName)
+                .createdAt(new Date())
+                .build());
+        System.out.println("Book successfully saved with id = "+savedBook.getId());
+        userHome();
+
     }
 
     private void exit() {
