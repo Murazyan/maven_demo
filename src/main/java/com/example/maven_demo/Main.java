@@ -1,13 +1,10 @@
 package com.example.maven_demo;
 
-import lombok.SneakyThrows;
-
-import java.sql.*;
-
 public class Main {
 
 
     public static void main(String[] args) {
+        System.out.println("Starting application");
         Application application =  new Application();
         application.start();
     }
